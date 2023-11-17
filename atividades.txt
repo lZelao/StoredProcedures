@@ -1,0 +1,141 @@
+CREATE DATABASE notas;
+
+
+USE notas;
+
+
+CREATE TABLE notas (
+    
+    numeroS INT AUTO_INCREMENT PRIMARY KEY,
+
+    numero_de_matricula INT NOT NULL,
+ 
+    nome VARCHAR(100) NOT NULL,
+  
+    valor_nota_un1 DECIMAL NOT NULL,
+
+    valor_nota_un2 DECIMAL NOT NULL,
+ 
+    valor_nota_un3 DECIMAL NOT NULL,
+    
+    valor_nota_un4 DECIMAL NOT NULL 
+   
+);
+
+
+
+INSERT INTO notas (numero_de_matricula, nome, valor_nota_un1, valor_nota_un2, valor_nota_un3, valor_nota_un4) 
+VALUES 
+    
+    (123, 'João', 80, 75, 90, 85),
+
+    (456, 'Maria', 85, 90, 88, 92),
+
+    (789, 'Pedro', 70, 65, 75, 80),
+
+    (101, 'Ana', 95, 88, 92, 90),
+
+    (202, 'Carlos', 78, 80, 85, 88),
+
+    (303, 'Laura', 88, 92, 90, 85),
+
+    (404, 'Fernando', 75, 78, 80, 82),
+
+    (505, 'Camila', 92, 90, 85, 88),
+
+    (606, 'Mariana', 80, 85, 88, 92),
+
+    (707, 'Rafael', 85, 88, 90, 86);
+
+
+
+    
+    
+  DELIMITER //
+  
+
+  CREATE PROCEDURE LISTAR_MEDIA()
+   
+ BEGIN 
+        
+     SELECT 	nome,
+         (valor_nota_un1 + valor_nota_un2 + valor_nota_un3 + valor_nota_un4) / 4 AS      media_final
+         
+      FROM notas order by nome;
+        
+          END//
+    
+     
+
+ 
+ DELIMITER 
+//
+CREATE PROCEDURE ObterNomeDoAluno(
+   
+ IN matricula_aluno INT
+)
+
+BEGIN
+   
+ SELECT nome AS nome_do_aluno
+    
+FROM notas
+    
+WHERE numero_de_matricula = matricula_aluno;
+ 
+END//
+ 
+ 
+
+
+
+DELIMITER //
+
+
+
+CREATE PROCEDURE ObterDadosDoAluno(
+ 
+  IN matricula_aluno INT,
+ 
+   OUT nome_aluno VARCHAR(100),
+
+    OUT media_final FLOAT,
+ 
+   OUT situacao_aluno VARCHAR(20)
+)
+
+BEGIN
+    
+SELECT nome, 
+
+           (valor_nota_un1 + valor_nota_un2 + valor_nota_un3 + valor_nota_un4) / 4 AS media_final
+    INTO nome_aluno, media_final
+    
+FROM notas
+   
+ WHERE numero_de_matricula = matricula_aluno;
+
+ 
+   SET situacao_aluno = IF(media_final >= 70, 'APROVADO', 'REPROVADO');
+END //
+
+
+
+DELIMITER ;
+
+
+
+
+       
+              
+
+CALL LISTAR_MEDIA();
+		
+CALL ObterNomeDoAluno(123);
+        
+CALL ObterDadosDoAluno(456, @nome, @media, @situacao); 
+		
+SELECT @nome AS Nome_Do_Aluno, @media AS Media_Final, @situacao AS Situacao_Aluno;
+
+         
+        
